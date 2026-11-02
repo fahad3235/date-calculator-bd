@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Date Calculator BD</title>
+<meta name="description" content="Offline date calculator for Bangladesh: days between dates, add/subtract days, weekday finder and business days, in English and Bangla.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div>
+      <h1 id="appTitle" data-i18n="title">Date Calculator BD</h1>
+      <p class="tagline" data-i18n="tagline">Days between dates, date arithmetic, weekdays and business days - offline, in English and Bangla.</p>
+    </div>
+    <button id="langBtn" type="button" aria-label="Switch language">Bangla</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Tools">
+    <button class="tab active" type="button" role="tab" data-tab="between" aria-selected="true" data-i18n="tabBetween">Days Between</button>
+    <button class="tab" type="button" role="tab" data-tab="addsub" aria-selected="false" data-i18n="tabAddSub">Add / Subtract</button>
+    <button class="tab" type="button" role="tab" data-tab="weekday" aria-selected="false" data-i18n="tabWeekday">Weekday</button>
+    <button class="tab" type="button" role="tab" data-tab="business" aria-selected="false" data-i18n="tabBusiness">Business Days</button>
+    <button class="tab" type="button" role="tab" data-tab="history" aria-selected="false" data-i18n="tabHistory">History</button>
+  </nav>
+
+  <section class="panel" id="panel-between">
+    <h2 data-i18n="betweenH">Days between two dates</h2>
+    <form id="betweenForm" novalidate>
+      <div class="field">
+        <label for="betweenStart" data-i18n="startDate">Start date</label>
+        <input id="betweenStart" type="date" required>
+      </div>
+      <div class="field">
+        <label for="betweenEnd" data-i18n="endDate">End date</label>
+        <input id="betweenEnd" type="date" required>
+      </div>
+      <label class="check"><input id="betweenInclusive" type="checkbox"> <span data-i18n="inclusive">Count the end date too (inclusive)</span></label>
+      <button class="primary" type="submit" data-i18n="calculate">Calculate</button>
+    </form>
+    <p class="error" id="betweenError" hidden></p>
+    <div class="result" id="betweenResult" hidden></div>
+  </section>
+
+  <section class="panel" id="panel-addsub" hidden>
+    <h2 data-i18n="addSubH">Add to or subtract from a date</h2>
+    <form id="addSubForm" novalidate>
+      <div class="field">
+        <label for="addSubDate" data-i18n="date">Date</label>
+        <input id="addSubDate" type="date" required>
+      </div>
+      <div class="field">
+        <label for="addSubDirection" data-i18n="direction">Direction</label>
+        <select id="addSubDirection">
+          <option value="add" data-i18n-opt="add">Add</option>
+          <option value="subtract" data-i18n-opt="subtract">Subtract</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="addSubAmount" data-i18n="amount">Amount</label>
+        <input id="addSubAmount" type="number" inputmode="numeric" min="1" max="99999" step="1" value="30" required>
+      </div>
+      <div class="field">
+        <label for="addSubUnit" data-i18n="unit">Unit</label>
+        <select id="addSubUnit">
+          <option value="days" data-i18n-opt="days">days</option>
+          <option value="weeks" data-i18n-opt="weeks">weeks</option>
+          <option value="months" data-i18n-opt="months">months</option>
+          <option value="years" data-i18n-opt="years">years</option>
+        </select>
+      </div>
+      <button class="primary" type="submit" data-i18n="calculate">Calculate</button>
+    </form>
+    <p class="error" id="addSubError" hidden></p>
+    <div class="result" id="addSubResult" hidden></div>
+  </section>
+
+  <section class="panel" id="panel-weekday" hidden>
+    <h2 data-i18n="weekdayH">What day of the week is it?</h2>
+    <form id="weekdayForm" novalidate>
+      <div class="field">
+        <label for="weekdayDate" data-i18n="date">Date</label>
+        <input id="weekdayDate" type="date" required>
+      </div>
+      <button class="primary" type="submit" data-i18n="calculate">Calculate</button>
+    </form>
+    <p class="error" id="weekdayError" hidden></p>
+    <div class="result" id="weekdayResult" hidden></div>
+  </section>
+
+  <section class="panel" id="panel-business" hidden>
+    <h2 data-i18n="businessH">Business days between two dates</h2>
+    <form id="businessForm" novalidate>
+      <div class="field">
+        <label for="businessStart" data-i18n="startDate">Start date</label>
+        <input id="businessStart" type="date" required>
+      </div>
+      <div class="field">
+        <label for="businessEnd" data-i18n="endDate">End date</label>
+        <input id="businessEnd" type="date" required>
+      </div>
+      <button class="primary" type="submit" data-i18n="calculate">Calculate</button>
+    </form>
+    <p class="error" id="businessError" hidden></p>
+    <div class="result" id="businessResult" hidden></div>
+  </section>
+
+  <section class="panel" id="panel-history" hidden>
+    <h2 data-i18n="historyH">Saved calculations</h2>
+    <p class="empty" id="historyEmpty">No calculations saved yet.</p>
+    <ul class="history" id="historyList"></ul>
+    <div class="row">
+      <button type="button" id="exportBtn" data-i18n="exportBtn">Export JSON</button>
+      <button type="button" id="importBtn" data-i18n="importBtn">Import JSON</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+    <div class="row">
+      <label class="field inline" for="deleteConfirm"><span data-i18n="typeDelete">Type DELETE to confirm</span>
+        <input id="deleteConfirm" type="text" autocomplete="off" placeholder="DELETE">
+      </label>
+      <button type="button" id="clearBtn" data-i18n="clearAll">Clear all</button>
+    </div>
+    <p class="error" id="historyError" hidden></p>
+    <div class="result" id="historyMsg" hidden></div>
+  </section>
+
+  <footer>
+    <p data-i18n="footer">Offline tool. Business days count Monday-Friday only and do not exclude public holidays. Dates use the Gregorian calendar.</p>
+  </footer>
+</main>
+
+<script src="js/datecalc.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
